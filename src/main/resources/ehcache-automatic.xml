@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+    <!--
+        peerDiscovery=automatic
+        multicastGroupAddress (mandatory) - specify a valid multicast group address
+        multicastGroupPort (mandatory) - specify a dedicated port for the multicast heart beat traffic
+        timeToLive - specify a value between 0 and 255 which determines how far the packets will propagate.
+          By convention, the restrictions are:
+          0   - the same host
+          1   - the same subnet
+          32  - the same site
+          64  - the same region
+          128 - the same continent
+          255 - unrestricted
+    -->
+    <cacheManagerPeerProviderFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+            properties="peerDiscovery=automatic,
+					multicastGroupAddress=230.0.0.1,
+					multicastGroupPort=4446,
+					timeToLive=255" />
+    <!--bootstrapCacheLoaderFactory 设置启动时获取其他服务器cache-->
+    <cache name="myCache" eternal="true" maxEntriesLocalHeap="10000">
+        <cacheEventListenerFactory
+        class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+    </cache>
+
+    <cacheManagerPeerListenerFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+            properties="socketTimeoutMillis=5000" />
+
+</ehcache>
